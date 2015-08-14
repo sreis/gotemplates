@@ -1,0 +1,2 @@
+# gotemplates
+Go template repository
