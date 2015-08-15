@@ -1,10 +1,7 @@
-SRC=./src/tests
+SRC=./tests
 GOPATH=$(shell pwd)
 
-all: generate build test 
-
-build:
-	go build -v ${SRC}
+all: generate test 
 
 generate:
 	go generate -v -x ${SRC}

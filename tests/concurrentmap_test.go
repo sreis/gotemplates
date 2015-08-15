@@ -1,6 +1,6 @@
 package tests
 
-//go:generate gotemplate concurrentmap "StringIntMap(string, int)"
+//go:generate gotemplate "../concurrentmap" "StringIntMap(string, int)"
 
 import (
 	"strconv"
