@@ -3,15 +3,13 @@ package tests
 //go:generate gotemplate concurrentmap "StringIntMap(string, int)"
 
 import (
+	"strconv"
 	"sync"
 	"testing"
 )
 
 func TestNewStringIntMapConcurrentMap(t *testing.T) {
-	a := NewStringIntMap()
-	if a.Count() != 0 {
-		t.Fatal()
-	}
+	if a := NewStringIntMap(); a.Count() != 0 { t.Fatal() }
 }
 
 func TestConcurrentMapSet(t *testing.T) {
@@ -21,16 +19,14 @@ func TestConcurrentMapSet(t *testing.T) {
 	a := NewStringIntMap()
 	go func() {
                 for counter := 0; counter < total; counter++ {
-                        go func() {
-                                a.Set(string(counter), counter)
+                        go func(counter int) {
+                                a.Set(strconv.Itoa(counter), counter)
                                 wg.Done()
-                        }()
+                        }(counter)
                 }
         }()
-
 	wg.Wait()
 
-	println(a.Count())
 	if a.Count() != total { t.Fail() }
 }
 
@@ -40,17 +36,15 @@ func TestConcurrentMapGet(t *testing.T) {
 	wg.Add(total)
 	a := NewStringIntMap()
 	for counter := 0; counter < total; counter++ {
-		go func() {
-			a.Set(string(counter), counter)
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
 			wg.Done()
-		}()
+		}(counter)
 	}
-
 	wg.Wait()
 
-	//if a.Count() != total { t.Fail() }
-	fifty, ok := a.Get("50")
-	if !ok || fifty != 50 { t.Fail() }
+	if a.Count() != total { t.Fail() }
+	if fifty, ok := a.Get("50"); !ok || fifty != 50 { t.Fail() }
 }
 
 func TestConcurrentMapRemove(t *testing.T) {
@@ -59,16 +53,15 @@ func TestConcurrentMapRemove(t *testing.T) {
 	wg.Add(total)
 	a := NewStringIntMap()
 	for counter := 0; counter < total; counter++ {
-		go func() {
-			a.Set(string(counter), counter)
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
 			wg.Done()
-		}()
+		}(counter)
 	}
-
 	wg.Wait()
+
 	a.Remove("50")
-	removed, ok := a.Get("50")
-	if !ok || removed != 50 { t.Fail() }
+	if _, ok := a.Get("50"); ok { t.Fail() }
 }
 
 func TestConcurrentMapGetAndRemove(t *testing.T) {
@@ -77,16 +70,14 @@ func TestConcurrentMapGetAndRemove(t *testing.T) {
 	wg.Add(total)
 	a := NewStringIntMap()
 	for counter := 0; counter < total; counter++ {
-		go func() {
-			a.Set(string(counter), counter)
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
 			wg.Done()
-		}()
+		}(counter)
 	}
-
 	wg.Wait()
-	val, ok := a.GetAndRemove("50")
-	if val != 50 { t.Fail() }
-	if !ok { t.Fail() }
+
+	if fifty, ok := a.GetAndRemove("50"); fifty != 50 || !ok { t.Fail() }
 }
 
 func TestConcurrentMapCount(t *testing.T) {
@@ -95,12 +86,11 @@ func TestConcurrentMapCount(t *testing.T) {
 	wg.Add(total)
 	a := NewStringIntMap()
 	for counter := 0; counter < total; counter++ {
-		go func() {
-			a.Set(string(counter), counter)
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
 			wg.Done()
-		}()
+		}(counter)
 	}
-
 	wg.Wait()
 
 	if a.Count() != total { t.Fail() }
@@ -112,12 +102,11 @@ func TestConcurrentMapHas(t *testing.T) {
 	wg.Add(total)
 	a := NewStringIntMap()
 	for counter := 0; counter < total; counter++ {
-		go func() {
-			a.Set(string(counter), counter)
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
 			wg.Done()
-		}()
+		}(counter)
 	}
-
 	wg.Wait()
 
 	if !a.Has("50") { t.Fail() }
