@@ -45,6 +45,5 @@ func main() {
 Build with:
 
 ```
-make generate
-make test
+make
 ```

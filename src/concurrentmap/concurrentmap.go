@@ -5,8 +5,6 @@ import "sync"
 
 //template type ConcurrentMap(Key, Value)
 
-type Key string
-type Value int
 type cmap map[Key]Value
 
 // A "thread" safe map of type Key:Value
