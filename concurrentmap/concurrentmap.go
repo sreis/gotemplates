@@ -78,3 +78,26 @@ func (this *ConcurrentMap) IsEmpty() bool {
 	return this.Count() == 0
 }
 
+// Returns a slice containing all map keys
+func (this *ConcurrentMap) Keys() []Key {
+	this.mutex.RLock()
+	defer this.mutex.RUnlock()
+
+	keys := make([]Key, 0, len(this.items))
+	for k, _ := range this.items {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+// Returns a slice containing all map values
+func (this *ConcurrentMap) Values() []Value {
+        this.mutex.RLock()
+        defer this.mutex.RUnlock()
+
+        values := make([]Value, 0, len(this.items))
+        for _, v := range this.items {
+                values = append(values, v)
+        }
+        return values
+}
