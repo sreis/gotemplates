@@ -104,22 +104,16 @@ func (this *ConcurrentMap) Values() []Value {
         return values
 }
 
-// Used by the Iter function to wrap two variables together over a channel
-type Tuple struct {
-	K	Key
-	V	Value
-}
-
-// Returns a buffered iterator which could be used in a for range loop.
-func (this *ConcurrentMap) Iter() <-chan Tuple {
+// Returns a <strong>snapshot</strong> (copy) of current map items which could be used in a for range loop.
+// One <strong>CANNOT</strong> change the contents of this map by means of this method, since it returns only a copy.
+func (this *ConcurrentMap) Iter() map[Key]Value {
 	this.mutex.RLock()
 	defer this.mutex.RUnlock()
 
-	ch := make(chan Tuple, len(this.items))
-	for key, val := range this.items {
-		ch <- Tuple{key, val}
+	results := make(map[Key]Value, len(this.items))
+	for key, value := range this.items {
+		results[key] = value
 	}
-	close(ch)
 
-	return ch
+	return results
 }

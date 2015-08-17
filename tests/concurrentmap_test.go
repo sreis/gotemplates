@@ -200,8 +200,8 @@ func TestConcurrentMapIter(t *testing.T) {
 	wg.Wait()
 
 	counter := 0
-	for tuple := range a.Iter() {
-		if !a.Has(tuple.K) {
+	for k, _ := range a.Iter() {
+		if !a.Has(k) {
 			t.Fail()
 		}
 		counter++
