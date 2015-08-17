@@ -185,3 +185,28 @@ func TestConcurrentMapValues(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestConcurrentMapIter(t *testing.T) {
+	var wg sync.WaitGroup
+	total := 100
+	wg.Add(total)
+	a := NewStringIntMap()
+	for counter := 0; counter < total; counter++ {
+		go func(counter int) {
+			a.Set(strconv.Itoa(counter), counter)
+			wg.Done()
+		}(counter)
+	}
+	wg.Wait()
+
+	counter := 0
+	for tuple := range a.Iter() {
+		if !a.Has(tuple.K) {
+			t.Fail()
+		}
+		counter++
+	}
+	if counter != total {
+		t.Fail()
+	}
+}
