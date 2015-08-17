@@ -112,15 +112,14 @@ type Tuple struct {
 
 // Returns a buffered iterator which could be used in a for range loop.
 func (this *ConcurrentMap) Iter() <-chan Tuple {
-	ch := make(chan Tuple, this.Count())
-	go func() {
-		this.mutex.RLock()
-		defer this.mutex.RUnlock()
+	this.mutex.RLock()
+	defer this.mutex.RUnlock()
 
-		for key, val := range this.items {
-			ch <- Tuple{key, val}
-		}
-		close(ch)
-	}()
+	ch := make(chan Tuple, len(this.items))
+	for key, val := range this.items {
+		ch <- Tuple{key, val}
+	}
+	close(ch)
+
 	return ch
 }
