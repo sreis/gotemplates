@@ -1,4 +1,6 @@
-// Template ConcurrentMap type
+/*
+ A thread-safe concurrent-map template.
+ */
 package concurrentmap
 
 import "sync"
@@ -100,4 +102,18 @@ func (this *ConcurrentMap) Values() []Value {
                 values = append(values, v)
         }
         return values
+}
+
+// Returns a <strong>snapshot</strong> (copy) of current map items which could be used in a for range loop.
+// One <strong>CANNOT</strong> change the contents of this map by means of this method, since it returns only a copy.
+func (this *ConcurrentMap) Iter() map[Key]Value {
+	this.mutex.RLock()
+	defer this.mutex.RUnlock()
+
+	results := make(map[Key]Value, len(this.items))
+	for key, value := range this.items {
+		results[key] = value
+	}
+
+	return results
 }

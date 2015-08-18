@@ -1,7 +1,7 @@
 # gotemplates
 Go template repository to use with [go template](https://github.com/ncw/gotemplate) tool.
 
-**TODO** add godoc
+[![GoDoc](https://godoc.org/github.com/sreis/gotemplates?status.svg)](https://godoc.org/github.com/sreis/gotemplates)
 
 ## Install
 
