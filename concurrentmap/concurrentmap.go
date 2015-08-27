@@ -41,8 +41,8 @@ func (this *ConcurrentMap) Remove(key Key) {
 func (this *ConcurrentMap) Get(key Key) (Value, bool) {
 	this.mutex.RLock()
 	defer this.mutex.RUnlock()
-	val, ok := this.items[key]
-	return val, ok
+	v, ok := this.items[key]
+	return v, ok
 }
 
 // Retrieves an element from map under given key.
@@ -50,22 +50,38 @@ func (this *ConcurrentMap) Get(key Key) (Value, bool) {
 func (this *ConcurrentMap) GetAndRemove(key Key) (Value, bool) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
-	val, ok := this.items[key]
+	v, ok := this.items[key]
 	if ok {
 		delete(this.items, key)
 	}
-	return val, ok
+	return v, ok
 }
 
 // Removes an element from the map by key and value.
 func (this *ConcurrentMap) RemoveWithValue(key Key, value Value) (Value, bool) {
         this.mutex.Lock()
         defer this.mutex.Unlock()
-        val, ok := this.items[key]
-        if ok && val == value {
+        v, ok := this.items[key]
+        if ok && v == value {
                 delete(this.items, key)
         }
-        return val, ok
+        return v, ok
+}
+
+// Iteratively removes all elements from the map that contain a value.
+func (this *ConcurrentMap) IterRemoveWithValue(value Value) uint {
+        this.mutex.Lock()
+        defer this.mutex.Unlock()
+
+	var counter uint = 0
+	for k, v := range this.items {
+		if v == value {
+			delete(this.items, k)
+			counter++
+		}
+	}
+
+	return counter
 }
 
 // Returns the number of elements within the map.
@@ -122,8 +138,8 @@ func (this *ConcurrentMap) Iter() map[Key]Value {
 	defer this.mutex.RUnlock()
 
 	results := make(map[Key]Value, len(this.items))
-	for key, value := range this.items {
-		results[key] = value
+	for k, v := range this.items {
+		results[k] = v
 	}
 
 	return results

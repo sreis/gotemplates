@@ -210,3 +210,26 @@ func TestConcurrentMapIter(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestConcurrentMapIterRemoveWithValue(t *testing.T) {
+	var wg sync.WaitGroup
+	total := 100
+	wg.Add(total)
+	a := NewStringIntMap()
+	for counter := 0; counter < total; counter++ {
+		go func(counter int) {
+			if counter < 50 {
+				a.Set(strconv.Itoa(counter), 200)
+			} else {
+				a.Set(strconv.Itoa(counter), counter)
+			}
+			wg.Done()
+		}(counter)
+	}
+	wg.Wait()
+
+	counter := a.IterRemoveWithValue(200)
+	if counter != 50 {
+		t.Fail()
+	}
+}
