@@ -57,6 +57,17 @@ func (this *ConcurrentMap) GetAndRemove(key Key) (Value, bool) {
 	return val, ok
 }
 
+// Removes an element from the map by key and value.
+func (this *ConcurrentMap) RemoveWithValue(key Key, value Value) (Value, bool) {
+        this.mutex.RLock()
+        defer this.mutex.RUnlock()
+        val, ok := this.items[key]
+        if ok && val == value {
+                delete(this.items, key)
+        }
+        return val, ok
+}
+
 // Returns the number of elements within the map.
 func (this *ConcurrentMap) Count() int {
 	this.mutex.RLock()
